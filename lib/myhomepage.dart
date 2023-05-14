@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
 import 'itemWidget.dart';
@@ -42,50 +43,85 @@ class _MyHomePageState extends State<MyHomePage> {
      //loadData();
     
     return Scaffold(
-      //extendBodyBehindAppBar: true, 
-      appBar: AppBar(
-        centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.black),
-        elevation: 0.0,
-        backgroundColor: Colors.white,
-          title: Text(
-          
-        'Flutter App',
-         textAlign: TextAlign.center,
-        style: TextStyle(color: Colors.black),
-      )), 
-      body:(CatalogModel.items.length != null && CatalogModel.items.length != 0)? 
-      
-      GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12
+      backgroundColor: const Color(0xFFF5F5F5),
+      body: SafeArea(
+        child: Container(
+          padding: EdgeInsets.all(18.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 15,),
+              Text("Catalog App", style: TextStyle(color: Colors.black87, fontSize: 28, fontWeight: FontWeight.bold),),
+            
+              Text("Trending Products", style: TextStyle(color: Colors.black87, fontSize: 18, ),),
+              SizedBox(height: 15,),
+
+              if(CatalogModel.items.length != null && CatalogModel.items.isNotEmpty)
+                Expanded(
+                  child: ListView.builder(itemCount: CatalogModel.items.length, 
+                  itemBuilder: ((context, index) {
+                    return CatalogItemWidget(item: CatalogModel.items[index]);
+                  })),
+                )
+            ],
+          ),
         ),
-       itemBuilder: (context, index){
-        return Card(
-          clipBehavior: Clip.antiAlias,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: GridTile(
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Image.network(CatalogModel.items[index].image),
-              ),
-            header: Center(child: Text(CatalogModel.items[index].name, style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold ),),),
-            footer: Center(child: Text("\$${CatalogModel.items[index].price.toString()}" , style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold ))),
-            ),
-          ),
-        );
-       },
-       itemCount: CatalogModel.items.length,)
-       : Center(
-        child: CircularProgressIndicator(),
       ),
-      drawer: mydrawer()
+    
     );
   }
   
+}
+
+class CatalogItemWidget extends StatelessWidget {
+  final Item item;
+
+  const CatalogItemWidget({super.key, required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15)
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(right: 15),
+              child: Image.network(item.image, fit: BoxFit.cover, height: 80,),
+            ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(item.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                  Text(item.desc, style: TextStyle(fontSize: 12),),
+                  
+                  ButtonBar(
+                    alignment: MainAxisAlignment.spaceBetween,
+                    buttonPadding: EdgeInsets.zero,
+      
+                    children: [
+                      Text("\$${item.price}", style: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 15),),
+                      ElevatedButton(onPressed: (){},
+                      style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Colors.black45), 
+                      shape: MaterialStatePropertyAll(StadiumBorder())),
+                  
+                       child: Text("Buy")
+                       )
+                    ],
+                  )
+      
+                ],
+              ),
+            )
+      
+          ],
+        ),
+      ),
+    );
+  }
 }
